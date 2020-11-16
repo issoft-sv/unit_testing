@@ -1,33 +1,32 @@
 package parser;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
+
+import org.testng.asserts.SoftAssert;
 import shop.Cart;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.fail;
 
 class JsonParserTest {
     JsonParser jp;
     File file;
 
-    @BeforeEach
+    @BeforeTest
     void setUp() {
         jp = new JsonParser();
         file = new File("src/main/resources/test.json");
     }
 
-    @AfterEach
+    @AfterTest
     void tearDown() {
         file.delete();
     }
 
-    @Test()
+    @Test
     void testFileIsCreated() {
         if (!file.exists()) {
             jp.writeToFile(new Cart("test"));
@@ -35,11 +34,10 @@ class JsonParserTest {
         } else fail("File already exists");
     }
 
-    @Test()
+    @Test
     void testReadFromFile() {
         jp.writeToFile(new Cart("test"));
         Cart cart = jp.readFromFile(file);
-        file.delete();
     }
 
     @Test
@@ -47,22 +45,24 @@ class JsonParserTest {
         jp.writeToFile(new Cart("test1"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", "  ", "test"})
-    void testReadFromFileExceptions(String input) {
-        assertThrows(NoSuchFileException.class, () -> {
-            jp.readFromFile(new File(input));
-        });
+    @DataProvider(name = "dp")
+    public static Object [][] testData () {
+        return new Object[][] {{""}, {" "}, {"test"}};
     }
 
-    @Test  // not real test just for demonstration
-    @Disabled
+    @Test(expectedExceptions = NoSuchFileException.class, dataProvider = "dp")
+    @Parameters (value = "input")
+    void testReadFromFileExceptions(String input) {
+            jp.readFromFile(new File(input));
+    }
+
+    @Test (enabled = false)
     void groupAssertions() {
+        SoftAssert assertion = new SoftAssert();
         int[]numbers = {0, 1, 2, 3, 4};
-        assertAll("numbers",
-                () -> assertEquals(numbers[1], 1),
-                () -> assertEquals(numbers[2], 2),
-                () -> assertEquals(numbers[3], 3)
-        );
+        assertion.assertEquals(numbers[1], 0);
+        assertion.assertEquals(numbers[2], 1);
+        assertion.assertEquals(numbers[3], 3);
+        assertion.assertAll();
     }
 }

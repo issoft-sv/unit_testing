@@ -1,23 +1,23 @@
 package shop;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertEquals;
 
 class VirtualItemTest {
     private VirtualItem vi;
 
-    @BeforeEach
+    @BeforeTest
     void setUp() {
         vi = new VirtualItem();
     }
-    @AfterEach
+    @AfterTest
     void tearDown() {
     }
 
-    @Test
+    @Test(groups = {"A", "B"})
     void testToString() {
         vi.setName("test");
         vi.setPrice(1);

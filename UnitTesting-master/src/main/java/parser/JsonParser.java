@@ -2,7 +2,6 @@ package parser;
 
 import com.google.gson.Gson;
 import shop.Cart;
-import shop.Item;
 
 import java.io.*;
 
