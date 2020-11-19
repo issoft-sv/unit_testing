@@ -1,5 +1,6 @@
 package parser;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import shop.Cart;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +27,9 @@ class JsonParserTest {
 
     @AfterEach
     void tearDown() {
-        file.delete();
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     @Test()
@@ -35,16 +40,51 @@ class JsonParserTest {
         } else fail("File already exists");
     }
 
+    @Test
+    void testExceptionFileIsNotCreated() {
+        jp.writeToFile(new Cart("test1"));
+        assertEquals(false, file.exists());
+    }
+
+    @Test
+    void testWriteToFileNullPointerException() {
+        assertThrows(NullPointerException.class, () -> {
+            jp.writeToFile(null);
+        });
+    }
+
     @Test()
     void testReadFromFile() {
         jp.writeToFile(new Cart("test"));
         Cart cart = jp.readFromFile(file);
-        file.delete();
+        assertNotNull(cart);
     }
 
-    @Test
-    void testWriteToFileCatchedException() {
-        jp.writeToFile(new Cart("test1"));
+    @Test()
+    void testReadFromFileNullPointerException() {
+        assertThrows(NullPointerException.class, () -> {
+            jp.writeToFile(new Cart("test"));
+            Cart cart = jp.readFromFile(null);
+        });
+    }
+
+    @Test()
+    void testReadFromFileNoSuchFileException() {
+        assertThrows(NoSuchFileException.class, () -> {
+            Cart cart = jp.readFromFile(file);
+        });
+    }
+
+    @Test()
+    void testReadFromWrongFile() {
+        Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter("src/main/resources/test.json")) {
+            writer.write(gson.toJson(null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Cart cart = jp.readFromFile(file);
+        assertNull(cart);
     }
 
     @ParameterizedTest
