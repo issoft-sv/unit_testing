@@ -32,7 +32,7 @@ class JsonParserTest {
         }
     }
 
-    @Test()
+    @Test() // to verify file is created in case when we have no another file or directory with such name
     void testFileIsCreated() {
         if (!file.exists()) {
             jp.writeToFile(new Cart("test"));
@@ -40,27 +40,27 @@ class JsonParserTest {
         } else fail("File already exists");
     }
 
-    @Test
+    @Test // to verify file is not created in case when we catch IOException
     void testExceptionFileIsNotCreated() {
         jp.writeToFile(new Cart("test1"));
         assertEquals(false, file.exists());
     }
 
-    @Test
+    @Test // to verify we get NullPointerException in case when we try to write null in the file
     void testWriteToFileNullPointerException() {
         assertThrows(NullPointerException.class, () -> {
             jp.writeToFile(null);
         });
     }
 
-    @Test()
+    @Test() // to verify we can successfully get cart object (not null) from the file prepared by the writeToFile method
     void testReadFromFile() {
         jp.writeToFile(new Cart("test"));
         Cart cart = jp.readFromFile(file);
         assertNotNull(cart);
     }
 
-    @Test()
+    @Test() // to verify we get NullPointerException in case when we try to read from null
     void testReadFromFileNullPointerException() {
         assertThrows(NullPointerException.class, () -> {
             jp.writeToFile(new Cart("test"));
@@ -68,14 +68,14 @@ class JsonParserTest {
         });
     }
 
-    @Test()
+    @Test() // to verify we get NoSuchFileException in case when the file doesn't exist
     void testReadFromFileNoSuchFileException() {
         assertThrows(NoSuchFileException.class, () -> {
             Cart cart = jp.readFromFile(file);
         });
     }
 
-    @Test()
+    @Test() // to verify we get null in case when we try deserialize json created from null
     void testReadFromWrongFile() {
         Gson gson = new Gson();
         try (FileWriter writer = new FileWriter("src/main/resources/test.json")) {
